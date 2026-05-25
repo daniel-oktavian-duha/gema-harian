@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GEMA Harian</title>
+
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#3d3d3d">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#3d3d3d">
+    <meta name="apple-mobile-web-app-title" content="GEMA">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <style>
+        :root {
+            --earth-dark: #3d3d3d;
+            --earth-brown: #5d4037;
+            --earth-bg: #efedea;
+        }
+
+        body {
+            background-color: var(--earth-bg);
+            font-family: 'Georgia', serif;
+            min-height: 100vh;
+        }
+
+        /* AREA KONTEN PANJANG & LAPANG */
+        .content-scroll {
+            max-height: 70vh;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #a1a1a1 transparent;
+        }
+
+        .content-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .content-scroll::-webkit-scrollbar-thumb {
+            background: #a1a1a1;
+            border-radius: 10px;
+        }
+
+        .gema-content p {
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+            color: #333;
+        }
+
+        .gema-content center b i {
+            display: block;
+            margin: 1.8rem 0 0.8rem;
+            font-size: 1.3rem;
+            color: var(--earth-brown);
+            font-style: normal;
+            border-bottom: 1px solid #d1d1d1;
+        }
+
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+
+<body class="p-0 md:p-6 flex flex-col items-center">
+
+    <div
+        class="w-full max-w-2xl bg-white shadow-2xl md:rounded-xl overflow-hidden flex flex-col border border-stone-200 mb-10">
+
+        <header class="bg-[#3d3d3d] p-5 text-white text-center shadow-md">
+            <div class="flex justify-between items-center mb-1">
+                <button id="prev-day" class="p-2 hover:bg-stone-600 rounded-full transition-all active:scale-90">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+                <h1 class="text-xl font-bold tracking-widest">GEMA</h1>
+                <button id="next-day" class="p-2 hover:bg-stone-600 rounded-full transition-all active:scale-90">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+            </div>
+            <p id="display-date" class="text-stone-300 text-sm font-medium"></p>
+        </header>
+
+        <div class="bg-stone-100 p-3 border-b border-stone-200">
+            <div id="tabs-container" class="flex justify-center flex-wrap gap-2 overflow-x-auto hide-scrollbar">
+            </div>
+        </div>
+
+        <div id="content-display" class="p-6 md:p-10 content-scroll gema-content text-lg italic bg-white">
+            <div class="text-center py-10 text-stone-400">Memuat data...</div>
+        </div>
+
+        <div class="p-4 bg-stone-50 border-t border-stone-200 flex justify-center">
+            <button id="toggle-rhema"
+                class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#5d4037] hover:text-[#4e342e] transition-colors py-2 px-6 rounded-full bg-stone-200/60 hover:bg-stone-200">
+                <svg id="toggle-icon" class="w-4 h-4 transition-transform duration-300" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+                <span id="toggle-text">Tulis Catatan Rhema</span>
+            </button>
+        </div>
+
+        <div id="rhema-panel" class="hidden p-6 bg-stone-50 border-t border-stone-200">
+            <textarea id="user-rhema" rows="8"
+                class="w-full p-4 border border-stone-300 rounded-xl focus:ring-2 focus:ring-[#5d4037] focus:border-transparent outline-none resize-none transition-all text-stone-800 text-sm leading-relaxed shadow-inner bg-white"
+                placeholder="Tuliskan rhema Anda di sini..."></textarea>
+
+            <button id="copy-btn"
+                class="w-full mt-4 bg-[#5d4037] hover:bg-[#4e342e] text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                </svg>
+                Salin & Bagikan Rhema
+            </button>
+        </div>
+    </div>
+
+    <footer class="text-center pb-10 text-stone-500 text-[10px] uppercase tracking-[0.2em]">
+        GEMA APP &bull; 2026
+    </footer>
+
+    <script>
+        // Registrasi Service Worker untuk PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('SW Registered'))
+                    .catch(err => console.log('SW Failed', err));
+            });
+        }
+
+        $(document).ready(function () {
+            let currentDate = new Date();
+            let allData = [];
+
+            // Load Data JSON
+            $.getJSON("db-v1.json", function (data) {
+                allData = data.GEMA;
+                updatePage();
+            }).fail(function () {
+                $('#content-display').html('<p class="text-red-500 text-center">Gagal memuat file data.json.</p>');
+            });
+
+            function updatePage() {
+                const day = currentDate.getDate();
+                const monthIndex = currentDate.getMonth();
+                const dateLong = currentDate.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+                $('#display-date').text(dateLong);
+
+                // Daftar variasi nama bulan (Inggris & Indonesia)
+                const monthsVariations = [
+                    ["Jan", "January", "Januari"],
+                    ["Feb", "February", "Februari"],
+                    ["Mar", "March", "Maret"],
+                    ["Apr", "April"],
+                    ["May", "Mei"],
+                    ["Jun", "June", "Juni"],
+                    ["Jul", "July", "Juli"],
+                    ["Aug", "August", "Agustus"],
+                    ["Sep", "September"],
+                    ["Oct", "October", "Okt", "Oktober"],
+                    ["Nov", "November"],
+                    ["Dec", "December", "Des", "Desember"]
+                ];
+
+                const currentMonthVariations = monthsVariations[monthIndex];
+
+                // Filter data dengan mencocokkan setiap kemungkinan nama bulan
+                const todayItems = allData.filter(item => {
+                    const itemTanggal = item.TANGGAL.toLowerCase().trim(); // Contoh: "gema 23 oct"
+
+                    // Cek apakah ada variasi bulan yang cocok di dalam string TANGGAL
+                    return currentMonthVariations.some(monthName => {
+                        const searchTag = `Gema ${day} ${monthName}`.toLowerCase();
+                        return itemTanggal === searchTag;
+                    });
+                });
+
+                renderTabs(todayItems, dateLong);
+            }
+
+            function renderTabs(items, dateLong) {
+                const $tabs = $('#tabs-container');
+                const $content = $('#content-display');
+                const $rhemaBox = $('#user-rhema');
+                $tabs.empty();
+
+                if (items.length > 0) {
+                    const listAyatVertikal = items.map(i => i.AYAT).join('\n');
+                    const template = `Saya sudah baca GEMA \ntanggal ${dateLong}\n${listAyatVertikal}\n\ndengan rhema:\n...\n\nTuhan Yesus memberkati`;
+                    $rhemaBox.val(template);
+
+                    items.forEach((item, index) => {
+                        const activeClass = (index === 0) ? "bg-[#5d4037] text-white shadow-md" : "bg-white text-stone-600 border border-stone-300";
+                        const $btn = $(`<button class="tab-btn px-4 py-1.5 rounded-full text-xs font-bold transition-all ${activeClass}"></button>`)
+                            .text(item.AYAT).attr('data-id', index);
+                        $tabs.append($btn);
+                    });
+
+                    $content.html(items[0].CONTENT).scrollTop(0);
+
+                    $('.tab-btn').off('click').on('click', function () {
+                        const idx = $(this).data('id');
+                        $('.tab-btn').removeClass('bg-[#5d4037] text-white shadow-md').addClass('bg-white text-stone-600 border border-stone-300');
+                        $(this).removeClass('bg-white text-stone-600 border border-stone-300').addClass('bg-[#5d4037] text-white shadow-md');
+                        $content.stop().fadeOut(100, function () {
+                            $(this).html(items[idx].CONTENT).fadeIn(100).scrollTop(0);
+                        });
+                    });
+                } else {
+                    $content.html(`<div class="text-center py-20 text-stone-400 italic text-sm">Tidak ada jadwal pembacaan untuk tanggal ini.</div>`);
+                    $rhemaBox.val("");
+                }
+            }
+
+            // UI Interaction: Toggle Rhema Panel
+            $('#toggle-rhema').click(function () {
+                const $panel = $('#rhema-panel');
+                const $icon = $('#toggle-icon');
+                const $text = $('#toggle-text');
+
+                if ($panel.is(':hidden')) {
+                    $panel.slideDown(400);
+                    $icon.addClass('rotate-180');
+                    $text.text('Sembunyikan Catatan');
+                    setTimeout(() => {
+                        $('html, body').animate({ scrollTop: $(document).height() }, 600);
+                    }, 200);
+                } else {
+                    $panel.slideUp(400);
+                    $icon.removeClass('rotate-180');
+                    $text.text('Tulis Catatan Rhema');
+                }
+            });
+
+            // Navigasi Tanggal
+            $('#prev-day').click(() => { currentDate.setDate(currentDate.getDate() - 1); updatePage(); });
+            $('#next-day').click(() => { currentDate.setDate(currentDate.getDate() + 1); updatePage(); });
+
+            // Copy to Clipboard
+            $('#copy-btn').click(function () {
+                const fullText = $('#user-rhema').val();
+                if (!fullText || fullText.includes("...")) {
+                    if (!confirm("Catatan masih berisi '...'. Tetap salin?")) return;
+                }
+                navigator.clipboard.writeText(fullText).then(() => {
+                    const $btn = $(this);
+                    const originalHTML = $btn.html();
+                    $btn.html('Berhasil Disalin!').addClass('bg-green-700');
+                    setTimeout(() => {
+                        $btn.html(originalHTML).removeClass('bg-green-700');
+                        $('#rhema-panel').slideUp(300);
+                        $('#toggle-icon').removeClass('rotate-180');
+                        $('#toggle-text').text('Tulis Catatan Rhema');
+                    }, 1500);
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
